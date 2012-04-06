@@ -35,13 +35,11 @@ files_demo.contextMenu = function(x, y, t) {
   contentDiv.
     html($(t).find('img').attr('title'));
   menuWrapper.
-    css('background-color', '#C9C9C9').
-    css('opacity', '0.8').
+    addClass('context-menu-wrapper').
     css('position', 'absolute').
     css('top', y).
     css('left', x).
     css('z-index', '10').
-    css('font-size', '11pt').
     click(function(e) {
       e.stopPropagation();
       e.preventDefault();
@@ -63,6 +61,7 @@ files_demo.contextMenu = function(x, y, t) {
         menuWrapper.remove();
       }
     })(options[i].action));
+    optionDiv.addClass('context-menu-option');
     contentDiv.append(optionDiv);
   }
   menuWrapper.append(contentDiv);
