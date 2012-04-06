@@ -32,6 +32,7 @@ files_demo.contextMenu = function(x, y, t) {
   var contentDiv = $('<div>');
   var options = files_demo.fileMenuOptions;
   $('.file-context-menu').remove();
+  console.log(t);
   contentDiv.
     html($(t).find('img').attr('title'));
   menuWrapper.
@@ -80,11 +81,10 @@ files_demo.handleFileSelect = function(e) {
       return function(e) {
         var x = parentEvent.originalEvent.pageX;
         var y = parentEvent.originalEvent.pageY;
-        var imgxxx = ['<div class="img-wrapper"><img class="thumb" src="', e.target.result,
-                        '" title="', escape(theFile.name), '"/></div>'].join('');
         var imgWrapper = $('<div>').addClass('img-wrapper');
         var img = $('<img>').load(function() {
           img.addClass('thumb');
+          img.attr('title', theFile.name);
           imgWrapper.append(img);
           $('#list').append(imgWrapper);
           $('div.img-wrapper:last').draggable({containment: $('div#list')}).css('border-width', '0');
