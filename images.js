@@ -80,25 +80,31 @@ files_demo.handleFileSelect = function(e) {
       return function(e) {
         var x = parentEvent.originalEvent.pageX;
         var y = parentEvent.originalEvent.pageY;
-        var img = ['<div class="img-wrapper"><img class="thumb" src="', e.target.result,
+        var imgxxx = ['<div class="img-wrapper"><img class="thumb" src="', e.target.result,
                         '" title="', escape(theFile.name), '"/></div>'].join('');
-        $('#list').append(img);
-        $('div.img-wrapper:last').draggable({containment: $('div#list')}).css('border-width', '0');
-        $('img.thumb:last').
-          resizable({containment: $('div#list'), autoHide: true, handles: 'se', aspectRatio: true}).
-          css('border-width', '0');
-        $('div.img-wrapper:last').
-          css('opacity', '0.9').
-          css('border', 'none').
-          css('z-index', '1').
-          css('position', 'absolute').
-          css('top', y - $('img.thumb:last').height()/2).
-          css('left', x - $('img.thumb:last').width()/2);
-        $('div.img-wrapper:last').click(function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-          files_demo.contextMenu(e.pageX, e.pageY, $(this));
+        var imgWrapper = $('<div>').addClass('img-wrapper');
+        var img = $('<img>').load(function() {
+          img.addClass('thumb');
+          imgWrapper.append(img);
+          $('#list').append(imgWrapper);
+          $('div.img-wrapper:last').draggable({containment: $('div#list')}).css('border-width', '0');
+          $('img.thumb:last').
+            resizable({containment: $('div#list'), autoHide: true, handles: 'se', aspectRatio: true}).
+            css('border-width', '0');
+          $('div.img-wrapper:last').
+            css('z-index', '1').
+            css('position', 'absolute').
+            css('width', $('img.thumb:last').css('width')).
+            css('height', $('img.thumb:last').css('height')).
+            css('top', y - $('img.thumb:last').height()/2).
+            css('left', x - $('img.thumb:last').width()/2);
+          $('div.img-wrapper:last').click(function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            files_demo.contextMenu(e.pageX, e.pageY, $(this));
+          });
         });
+        img.attr('src', e.target.result);
       };
     })(f, e);
     reader.readAsDataURL(f);
