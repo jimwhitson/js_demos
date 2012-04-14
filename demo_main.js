@@ -368,6 +368,8 @@ $(function() {
   var demoLabels = [];
   var demos = {};
   var baseURL = "/demos/";
+  var targetSelector = '#demo-target';
+  var controlsParent = '#demo-controls';
   var defaultHTML = '<div><h3>A selection of simple JavaScript demos.</h3><hr><div id="default-content"><p>Images: Drag images in from the desktop and arrange them in the browser.</p><p>AJAX: Smooth, uninterrupted browsing.</p><p>Tiles: Drag-and-drop interface with animation.</p></div></div>';
   $('#content').css('padding', '0');
   var demoClickHandler = function() {
@@ -377,13 +379,13 @@ $(function() {
   };
   var loadNewDemo = function(newDemo, state) {
     if(currentDemo) {
-      currentDemo.destroy('#demo-target');
+      currentDemo.destroy(targetSelector);
     }
     $('.demo-label').css('text-decoration', 'none');
     newDemo.labelElement.css('text-decoration', 'underline');
-    $('#demo-target').children().remove();
+    $(targetSelector).children().remove();
     currentDemo = newDemo;
-    currentDemo.go('#demo-target', state);
+    currentDemo.go(targetSelector, state);
   };
   var updateHistory = function(newDemo) {
     if(!history.pushState) {
@@ -403,7 +405,7 @@ $(function() {
     demoLabels.push(tmpLabel);
   }
   for(var i = 0; i < demoLabels.length; i++) {
-    $('#demo-controls').append(demoLabels[i]);
+    $(controlsParent).append(demoLabels[i]);
     demoLabels[i].click(demoClickHandler);
   }
   var loaded = false;
@@ -425,7 +427,7 @@ $(function() {
       }
     }
     if(section === "default") {
-      $('#demo-target').html(defaultHTML);
+      $(targetSelector).html(defaultHTML);
     }
   }
   loadState();
@@ -436,11 +438,11 @@ $(function() {
     } else {
       history.replaceState({section: 'default'}, "", baseURL);
     }
-    $('#demo-target').html(defaultHTML);
+    $(targetSelector).html(defaultHTML);
     $('a#demos-main-link').click(function(e) {
       e.preventDefault();
-      $('#demo-target').children().remove();
-      $('#demo-target').html(defaultHTML);
+      $(targetSelector).children().remove();
+      $(targetSelector).html(defaultHTML);
       if(currentDemo) { currentDemo.destroy(); };
       history.pushState({section: 'default'}, "", baseURL);
     });
