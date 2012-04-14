@@ -443,6 +443,7 @@ $(function() {
       e.preventDefault();
       $(targetSelector).children().remove();
       $(targetSelector).html(defaultHTML);
+      $('.demo-label').css('text-decoration', 'none');
       if(currentDemo) { currentDemo.destroy(); };
       history.pushState({section: 'default'}, "", baseURL);
     });
