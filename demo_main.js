@@ -142,7 +142,7 @@ var makeFilesDemo = function() {
   return filesDemo;
 };
 
-var makeAjaxDemo = function() {
+var makeAjaxDemo = function(baseURL) {
   var ajaxDemo = {};
   ajaxDemo.id = 'ajax';
   ajaxDemo.labelText = "AJAX";
@@ -161,8 +161,7 @@ var makeAjaxDemo = function() {
   })();
   var updateHistory = function(number) {
     if(history.pushState) {
-      history.pushState({section: ajaxDemo.id, part: number}, "", "/demos/ajax/"+number+'/');
-      console.log("pushing: "+number);
+      history.pushState({section: ajaxDemo.id, part: number}, "", baseURL+ajaxDemo.id+"/"+number+'/');
     }
   };
   ajaxDemo.go = function(targetName, state) {
@@ -188,11 +187,10 @@ var makeAjaxDemo = function() {
     if(state && state.part) {
       ajaxDemo.loadSection(state.part);
     } else {
-      var re = new RegExp('\/demos\/'+ajaxDemo.id+'\/(\\d*)\/');
+      var re = new RegExp(baseURL+ajaxDemo.id+'\/(\\d*)\/');
       var loc = window.location;
       if(window.location.pathname.match(re)) {
         var m = window.location.pathname.match(re);
-        console.log(m);
         ajaxDemo.loadSection(m[1]);
       }
     }
@@ -395,7 +393,7 @@ $(function() {
     }
   };
   for(var i = 0; i < demoFactories.length; i++) {
-    tmpDemo = demoFactories[i]();
+    tmpDemo = demoFactories[i](baseURL);
     var tmpLabel = $('<li>').
         attr('id', tmpDemo.id).
         addClass('demo-label').
@@ -412,7 +410,6 @@ $(function() {
   var loadState = function(e) {
     if(e && e.originalEvent.state) {
       var section = e.originalEvent.state.section;
-      if(currentDemo) {console.log(currentDemo.id+" popping: "+section); console.log(e.originalEvent.state);}
       for(var i in demos) if(demos.hasOwnProperty(i)) {
         if(section === demos[i].id) {
           loadNewDemo(demos[i], e.originalEvent.state);
