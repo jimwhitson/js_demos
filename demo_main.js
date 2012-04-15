@@ -42,11 +42,9 @@ var makeFilesDemo = function() {
       html($(t).find('img').attr('title'));
     menuWrapper.
       addClass('context-menu-wrapper').
-      css('opacity', '1').
       css('position', 'absolute').
       css('top', y).
       css('left', x).
-      css('z-index', '10').
       click(function(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -60,8 +58,9 @@ var makeFilesDemo = function() {
       click(function() {
         menuWrapper.remove();
       });
+    var optionWrapper = $('<div>').attr('id', 'option-wrapper');
     for(var i = 0; i < options.length; i++) {
-      var optionDiv = $('<div>').text(options[i].name);
+      var optionDiv = $('<span>').text(options[i].name);
       optionDiv.click((function (f) {
         return function(e) {
           f.call($(t), e);
@@ -69,8 +68,9 @@ var makeFilesDemo = function() {
         }
       })(options[i].action));
       optionDiv.addClass('context-menu-option');
-      contentDiv.append(optionDiv);
+      optionWrapper.append(optionDiv);
     }
+    contentDiv.append(optionWrapper);
     menuWrapper.append(contentDiv);
     $('#list').append(menuWrapper);
   };
@@ -376,6 +376,13 @@ $(function() {
   var controlsParent = '#demo-controls';
   var $defaultText = $('<div>').html(title);
   $('#content').css('padding', '0');
+  var destroyCurrent = function() {
+    if(currentDemo) {
+      currentDemo.destroy(targetSelector);
+    }
+    $(targetSelector).children().remove();
+    $('.demo-label').css('text-decoration', 'none');
+  };
   var demoClickHandler = function() {
     var demoId = $(this).attr('id').replace(/-alt/, '');
     var newDemo = demos[demoId];
@@ -383,12 +390,8 @@ $(function() {
     loadNewDemo(newDemo);
   };
   var loadNewDemo = function(newDemo, state) {
-    if(currentDemo) {
-      currentDemo.destroy(targetSelector);
-    }
-    $('.demo-label').css('text-decoration', 'none');
+    destroyCurrent();
     newDemo.labelElement.css('text-decoration', 'underline');
-    $(targetSelector).children().remove();
     currentDemo = newDemo;
     currentDemo.go(targetSelector, state);
   };
@@ -437,6 +440,7 @@ $(function() {
       }
     }
     if(section === "default") {
+      destroyCurrent();
       $(targetSelector).append($defaultText);
       $('.alt-section-link').click(demoClickHandler);
     }
@@ -453,11 +457,9 @@ $(function() {
     $('.alt-section-link').click(demoClickHandler);
     $('a#demos-main-link').click(function(e) {
       e.preventDefault();
-      $(targetSelector).children().remove();
+      destroyCurrent();
       $(targetSelector).append($defaultText);
       $('.alt-section-link').click(demoClickHandler);
-      $('.demo-label').css('text-decoration', 'none');
-      if(currentDemo) { currentDemo.destroy(); };
       history.pushState({section: 'default'}, "", baseURL);
     });
   }
