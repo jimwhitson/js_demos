@@ -219,8 +219,8 @@ var makeAnimationDemo = function() {
   animationDemo.id = 'tiles';
   animationDemo.labelText = "Tiles";
   animationDemo.description = "Drag-and-drop interface with animation.";
-  animationDemo.boxWidth = 50;
-  animationDemo.boxHeight = 50;
+  animationDemo.boxWidth = 40;
+  animationDemo.boxHeight = 40;
   animationDemo.duration = 800;
   animationDemo.displacement = 10;
   animationDemo.colours = ['CF4D3F', 'FF9900', 'FCFC06', '92CC47', '092E20', '00A3E6', '1A2A59', '662678'];
@@ -311,8 +311,10 @@ var makeAnimationDemo = function() {
         divideOne(targets[i]);
       }
       $container.append($('<div>').addClass('clearfix'));
-      $container.before($('<div>').hide().attr('id', 'tile-label').html("Drag and drop to swap tiles.<br> Click here to animate.").css('position', 'relative').css('text-align', 'center'));
-      $('#tile-label').slideDown('slow').click(startDisco).addClass('no-select');
+      var tileLabelWrapper = $('<div>').attr('id', 'tile-label-wrapper').hide();
+      tileLabelWrapper.append($('<span>').attr('id', 'tile-label').text("Animate").css('position', 'relative'));
+      $container.before(tileLabelWrapper);
+      $('#tile-label-wrapper').slideDown('slow').click(startDisco).addClass('no-select');
     }
 
     var disco = function(colours) {
@@ -357,7 +359,7 @@ var makeAnimationDemo = function() {
       clearInterval(timers[i]);
     }
     $(targetName).css('text-align', 'center');
-    $('#tile-label').remove();
+    $('#tile-label-wrapper').remove();
     $(targetName).removeClass('no-select');
   };
 
