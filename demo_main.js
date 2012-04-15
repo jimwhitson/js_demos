@@ -3,6 +3,7 @@ var makeFilesDemo = function() {
   var filesDemo = {};
   filesDemo.id = 'images';
   filesDemo.labelText = "Images";
+  filesDemo.description = "Drag images in from the desktop and arrange them in the browser.";
 
   filesDemo.fileMenuOptions = (function() {
     var newOption = {};
@@ -146,6 +147,7 @@ var makeAjaxDemo = function(baseURL) {
   var ajaxDemo = {};
   ajaxDemo.id = 'ajax';
   ajaxDemo.labelText = "AJAX";
+  ajaxDemo.description = "Smooth, uninterrupted browsing.";
   ajaxDemo.loadSection = (function() {
     var cache = {};
     return function (number) {
@@ -216,6 +218,7 @@ var makeAnimationDemo = function() {
   };
   animationDemo.id = 'tiles';
   animationDemo.labelText = "Tiles";
+  animationDemo.description = "Drag-and-drop interface with animation.";
   animationDemo.boxWidth = 50;
   animationDemo.boxHeight = 50;
   animationDemo.duration = 800;
@@ -368,9 +371,10 @@ $(function() {
   var demoLabels = [];
   var demos = {};
   var baseURL = "/demos/";
+  var title = "<h3>A selection of JavaScript demos.</h3><hr>";
   var targetSelector = '#demo-target';
   var controlsParent = '#demo-controls';
-  var defaultHTML = '<div><h3>A selection of simple JavaScript demos.</h3><hr><div id="default-content"><p>Images: Drag images in from the desktop and arrange them in the browser.</p><p>AJAX: Smooth, uninterrupted browsing.</p><p>Tiles: Drag-and-drop interface with animation.</p></div></div>';
+  var $defaultText = $('<div>').html(title);
   $('#content').css('padding', '0');
   var demoClickHandler = function() {
     var newDemo = demos[$(this).attr('id')];
@@ -400,6 +404,10 @@ $(function() {
         attr('id', tmpDemo.id).
         addClass('demo-label').
         text(tmpDemo.labelText);
+    var tmpDesc = $('<div>').attr('id', tmpDemo.id+'-desc').
+      append($('<p>').
+          text(tmpDemo.labelText+": "+tmpDemo.description));
+    $defaultText.append(tmpDesc);
     tmpDemo.labelElement = tmpLabel;
     demos[tmpDemo.id] = tmpDemo;
     demoLabels.push(tmpLabel);
@@ -427,7 +435,7 @@ $(function() {
       }
     }
     if(section === "default") {
-      $(targetSelector).html(defaultHTML);
+      $(targetSelector).append($defaultText);
     }
   }
   loadState();
@@ -438,11 +446,11 @@ $(function() {
     } else {
       history.replaceState({section: 'default'}, "", baseURL);
     }
-    $(targetSelector).html(defaultHTML);
+    $(targetSelector).append($defaultText);
     $('a#demos-main-link').click(function(e) {
       e.preventDefault();
       $(targetSelector).children().remove();
-      $(targetSelector).html(defaultHTML);
+      $(targetSelector).append(defaultText);
       $('.demo-label').css('text-decoration', 'none');
       if(currentDemo) { currentDemo.destroy(); };
       history.pushState({section: 'default'}, "", baseURL);
