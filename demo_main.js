@@ -2,8 +2,8 @@
 var makeFilesDemo = function() {
   var filesDemo = {};
   filesDemo.id = 'images';
-  filesDemo.labelText = "Images";
-  filesDemo.description = "Drag images in from the desktop and arrange them in the browser.";
+  filesDemo.labelText = 'Montage';
+  filesDemo.description = 'Drag images in from the desktop and arrange them in the browser (<a href="https://www.google.com/chrome">Chrome</a> and <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a> only).';
 
   filesDemo.fileMenuOptions = (function() {
     var newOption = {};
@@ -120,9 +120,38 @@ var makeFilesDemo = function() {
 
   filesDemo.go = function(targetName, state) {
     var filesDemoTarget = $('<div>').
-      attr('id', 'list').
-      html('Drag images into the box (<a href="https://www.google.com/chrome">Chrome</a> and <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>).<br>Drag the lower right-hand corner of an image to resize; click for a menu.');
+      attr('id', 'list');
+    var tmpText = '<br>Use transparent PNGs for the best effect (<a href="http://freevintagedigistamps.blogspot.co.uk" target="_blank">these</a> are excellent).';
+    var imagesHelp = $("<div>").
+      addClass('images-help');
+    var helpText = $("<div>").attr('id', 'help-text').
+      html('Drag images into the box .'+
+          tmpText+'<br>Drag the lower right-hand corner of an image to resize; click for a menu.'+
+          '<br>Click anywhere in this box to dismiss.');
+    imagesHelp.append(helpText);
+    var helpHeight;
+    console.log(helpHeight);
+    var openHelp = function() {
+      imagesHelp.unbind();
+      imagesHelp.animate({height: helpHeight}, 'slow', function() {
+          helpText.show();
+          imagesHelp.css('height', 'auto');
+          imagesHelp.click(closeHelp);
+      });
+      
+    };
+    var closeHelp = function() {
+      helpHeight = imagesHelp.height();
+      imagesHelp.unbind();
+      imagesHelp.animate({height: '1em'}, 'slow', function() { 
+          helpText.hide(); 
+          imagesHelp.click(openHelp);
+      });
+    };
 
+    imagesHelp.click(closeHelp);
+
+    filesDemoTarget.append(imagesHelp);
     $(targetName).append(filesDemoTarget);
     $('#list').bind('dragover', function(e) {
       e.stopPropagation();
@@ -168,7 +197,8 @@ var makeAjaxDemo = function(baseURL) {
   };
   ajaxDemo.go = function(targetName, state) {
     var $target = $(targetName);
-    var $title = $('<h3>').text('Aristotle\'s Categories').append($('<hr>'));
+    var attrib = '<h5>Courtesy of <a href="http://www.gutenberg.org/">Project Gutenberg</a></h5><hr>';
+    var $title = $('<h3>').text('Aristotle\'s Categories').append(attrib);
     var $sections = $('<div>').attr('id', 'section-list').text("Parts: ");
     for(var i = 1; i < 16; i++) {
       $sections.append($('<span>').
@@ -377,7 +407,6 @@ $(function() {
   var targetSelector = '#demo-target';
   var controlsParent = '#demo-controls';
   var $defaultText = $('<div>').html(title);
-  $('#content').css('padding', '0');
   var destroyCurrent = function() {
     if(currentDemo) {
       currentDemo.destroy(targetSelector);
@@ -411,7 +440,7 @@ $(function() {
         addClass('demo-label').
         text(tmpDemo.labelText);
     var tmpDesc = $('<div>').attr('id', tmpDemo.id+'-alt').
-      append($('<p>').text(tmpDemo.labelText+": "+tmpDemo.description)).
+      append($('<p>').html(tmpDemo.labelText+": "+tmpDemo.description)).
       addClass('alt-section-link').
       click(demoClickHandler);
     $defaultText.append(tmpDesc);
@@ -465,7 +494,6 @@ $(function() {
       history.pushState({section: 'default'}, "", baseURL);
     });
   }
-  
 });
 
 }());
