@@ -377,7 +377,8 @@ $(function() {
   var $defaultText = $('<div>').html(title);
   $('#content').css('padding', '0');
   var demoClickHandler = function() {
-    var newDemo = demos[$(this).attr('id')];
+    var demoId = $(this).attr('id').replace(/-alt/, '');
+    var newDemo = demos[demoId];
     updateHistory(newDemo);
     loadNewDemo(newDemo);
   };
@@ -404,9 +405,10 @@ $(function() {
         attr('id', tmpDemo.id).
         addClass('demo-label').
         text(tmpDemo.labelText);
-    var tmpDesc = $('<div>').attr('id', tmpDemo.id+'-desc').
-      append($('<p>').
-          text(tmpDemo.labelText+": "+tmpDemo.description));
+    var tmpDesc = $('<div>').attr('id', tmpDemo.id+'-alt').
+      append($('<p>').text(tmpDemo.labelText+": "+tmpDemo.description)).
+      addClass('alt-section-link').
+      click(demoClickHandler);
     $defaultText.append(tmpDesc);
     tmpDemo.labelElement = tmpLabel;
     demos[tmpDemo.id] = tmpDemo;
@@ -436,6 +438,7 @@ $(function() {
     }
     if(section === "default") {
       $(targetSelector).append($defaultText);
+      $('.alt-section-link').click(demoClickHandler);
     }
   }
   loadState();
@@ -447,10 +450,12 @@ $(function() {
       history.replaceState({section: 'default'}, "", baseURL);
     }
     $(targetSelector).append($defaultText);
+    $('.alt-section-link').click(demoClickHandler);
     $('a#demos-main-link').click(function(e) {
       e.preventDefault();
       $(targetSelector).children().remove();
-      $(targetSelector).append(defaultText);
+      $(targetSelector).append($defaultText);
+      $('.alt-section-link').click(demoClickHandler);
       $('.demo-label').css('text-decoration', 'none');
       if(currentDemo) { currentDemo.destroy(); };
       history.pushState({section: 'default'}, "", baseURL);
