@@ -15,6 +15,15 @@ div.img-wrapper {
   margin: 0;
 }
 
+.images-help {
+  background: rgb(215, 215, 235);
+  width: 60%;
+  margin-right: 20%;
+  margin-left: 20%;
+  border-radius: 0.4em;
+  behavior: url(/PIE.htc);
+}
+
 div.context-menu-wrapper {
   background-color: #FFFFFF;
   font-size: 11pt;
