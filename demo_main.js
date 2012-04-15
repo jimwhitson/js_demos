@@ -123,14 +123,15 @@ var makeFilesDemo = function() {
       attr('id', 'list');
     var tmpText = '<br>Use transparent PNGs for the best effect (<a href="http://freevintagedigistamps.blogspot.co.uk" target="_blank">these</a> are excellent).';
     var imagesHelp = $("<div>").
+      addClass('no-select').
       addClass('images-help');
     var helpText = $("<div>").attr('id', 'help-text').
+      addClass('no-select').
       html('Drag images into the box .'+
           tmpText+'<br>Drag the lower right-hand corner of an image to resize; click for a menu.'+
           '<br>Click anywhere in this box to dismiss.');
     imagesHelp.append(helpText);
     var helpHeight;
-    console.log(helpHeight);
     var openHelp = function() {
       imagesHelp.unbind();
       imagesHelp.animate({height: helpHeight}, 'slow', function() {
@@ -140,7 +141,7 @@ var makeFilesDemo = function() {
       });
       
     };
-    var closeHelp = function() {
+    var closeHelp = function(e) {
       helpHeight = imagesHelp.height();
       imagesHelp.unbind();
       imagesHelp.animate({height: '1em'}, 'slow', function() { 
@@ -428,7 +429,7 @@ $(function() {
   };
   var updateHistory = function(newDemo) {
     if(!history.pushState) {
-      window.location.hash = "#"+currentDemo.id+'/';
+      window.location.hash = "#"+newDemo.id+'/';
     } else {
       history.pushState({section: newDemo.id}, "", baseURL + newDemo.id + '/');
     }
@@ -469,6 +470,14 @@ $(function() {
           loaded = true;
         }
       }
+      if(!loaded) {
+        for(var i in demos) if(demos.hasOwnProperty(i)) {
+          if(window.location.hash.match(new RegExp('#'+demos[i].id+'/.*'))) {
+            loaded = true;
+            loadNewDemo(demos[i]);
+          }
+        }
+      }
     }
     if(section === "default") {
       destroyCurrent();
@@ -478,6 +487,7 @@ $(function() {
   }
   loadState();
   $(window).bind('popstate', loadState);
+  $(window).bind('hashchange', loadState);
   if(!loaded) {
     if(!history.pushState) {
       // IE
@@ -491,7 +501,9 @@ $(function() {
       destroyCurrent();
       $(targetSelector).append($defaultText);
       $('.alt-section-link').click(demoClickHandler);
-      history.pushState({section: 'default'}, "", baseURL);
+      if(history.pushState) {
+        history.pushState({section: 'default'}, "", baseURL);
+      }
     });
   }
 });
