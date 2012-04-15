@@ -16,18 +16,29 @@ div.img-wrapper {
 }
 
 div.context-menu-wrapper {
-  background-color: #C9C9C9;
+  background-color: #FFFFFF;
   font-size: 11pt;
-  opacity: 0.8;
   border-width: 0.1em;
-  border-style: solid;
+  border-style: solid; 
+  z-index: 3;
+  padding: 0.3em;
 }
 
+
 .context-menu-option {
-  background-color: #FFFFFF;
   border-width: 0.1em;
   border-style: solid;
   margin: 0.1em;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+  border-radius: 0.4em;
+  behavior: url(/PIE.htc);
+}
+
+#option-wrapper {
+  padding: 0.5em;
 }
 
 span.section-numbers {
@@ -64,4 +75,10 @@ span.section-numbers {
 
 #tile-label {
   padding-bottom: 0.5em;
+}
+
+.alt-section-link {
+  text-align: left;
+  padding-left: 2em;
+  padding-right: 2em;
 }
