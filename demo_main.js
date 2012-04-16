@@ -343,7 +343,9 @@ var makeAnimationDemo = function() {
       }
       $container.append($('<div>').addClass('clearfix'));
       var tileLabelWrapper = $('<div>').attr('id', 'tile-label-wrapper').hide();
-      tileLabelWrapper.append($('<span>').attr('id', 'tile-label').text("Animate").css('position', 'relative'));
+      tileLabelWrapper.append($('<span>').attr('id', 'tile-label').
+          addClass('context-menu-option').
+          text("Animate").css('position', 'relative'));
       $container.before(tileLabelWrapper);
       $('#tile-label-wrapper').slideDown('slow').click(startDisco).addClass('no-select');
     }
