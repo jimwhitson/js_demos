@@ -25,7 +25,7 @@ div.img-wrapper {
   behavior: url(/PIE.htc);
 }
 
-div.context-menu-wrapper {
+.context-menu-wrapper, .comment-box {
   background-color: #FFFFFF;
   font-size: 11pt;
   border-width: 0.1em;
@@ -34,6 +34,34 @@ div.context-menu-wrapper {
   padding: 0.3em;
 }
 
+.comment-box {
+  background-color: #FFFFFF;
+  box-shadow: 1px 1px 1px 1px #DDD;
+  behavior: url(/PIE.htc);
+  padding: 0;
+}
+
+.comment-text {
+  margin: 0.3em;
+}
+
+.comment-button {
+  background-color: #dc0;
+  height: 12px;
+  width: 12px;
+  margin: 4px;
+  margin-bottom: 0;
+  border-radius: 1em;
+}
+
+.commented {
+  background-color: #EEFFEE;
+}
+
+#main-text {
+  line-height: 20px;
+  text-align: left;
+}
 
 .context-menu-option {
   border-width: 0.1em;
@@ -50,6 +78,16 @@ div.context-menu-wrapper {
 
 #option-wrapper {
   padding: 0.5em;
+}
+
+.product-box {
+  height: 100px;
+  width: 70px;
+  border-style: solid;
+  border-width: 0.1em;
+  border-color: #000000;
+  float: left;
+  margin: 0.5em;
 }
 
 span.section-numbers {

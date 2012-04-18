@@ -399,10 +399,187 @@ var makeAnimationDemo = function() {
   return animationDemo;
 }
     
+var makeCommentDemo = function() {
+  var commentDemo = {};
+  commentDemo.id = 'comments';
+  commentDemo.labelText = "Comments";
+  commentDemo.description = "Inline commenting with LocalStorage for persistence.";
+  commentDemo.defaultText = "Edit me.";
+
+  commentDemo.go = function(targetSelector, state, containerSelector) {
+    var $container = $(containerSelector);
+    var $target = $(targetSelector);
+    var pos = $container.position();
+    var debounce = function(func , timeout) {
+      var timeoutID;
+      var timeout = timeout || 200;
+      return function () {
+          var scope = this;
+          var args = arguments;
+          clearTimeout(timeoutID);
+          timeoutID = setTimeout(function () {
+              func.apply(scope , Array.prototype.slice.call(args));
+          }, timeout);
+      }
+    }
+
+    var makeCommentBox = function(id, top, left) {
+      var cb = {};
+      cb.size = 20;
+      cb.id = id;
+      cb.top = top;
+      cb.left = left;
+      cb.$button = $('<div>').addClass('comment-button').html("&nbsp;");
+      cb.$text = $('<span>').
+        addClass('comment-text').
+        attr('contenteditable', 'true').
+        text(commentDemo.defaultText);
+      cb.$box = $('<div>').addClass('comment-box').
+        attr('id', id).
+        css('position', 'absolute').
+        css('left', cb.left).
+        css('top', cb.top).
+        css('height', cb.size).
+        css('width', cb.size).
+        append(cb.$button).
+        append(cb.$text);
+      cb.position = function(top, left) {
+        cb.top = top;
+        cb.left = left;
+        cb.$box.css('top', top).css('left', left);
+      };
+      cb.saveLS = function() {
+        if(cb.$text.text() != commentDemo.defaultText && cb.$text.text() != '') {
+          localStorage.setItem(cb.id, cb.$text.text());
+        }
+      };
+      cb.loadLS = function() {
+        var loaded = localStorage.getItem(cb.id);
+        if(loaded && loaded != '' && loaded != commentDemo.defaultText) {
+          cb.$text.text(loaded);
+          cb.$box.addClass('commented');
+        }
+      };
+      if(localStorage) {
+        cb.save = cb.saveLS;
+        cb.load = cb.loadLS;
+      } else {
+        cb.save = cb.load = function () {};
+      }
+      cb.close = function() {
+        cb.$button.unbind();
+        cb.$text.unbind();
+        cb.$box.css('width', cb.size).css('height', cb.size).css('z-index', '3');
+        cb.$text.hide().unbind();
+        cb.save();
+        cb.$button.click(cb.open);
+      };
+      cb.open = function() {
+        cb.$button.unbind();
+        cb.$box.css('width', 'auto').css('height', 'auto').css('z-index', '4');
+        if(cb.$text.text() === "") {
+          cb.$text.text(commentDemo.defaultText);
+        }
+        cb.$text.
+          show().
+          focus().
+          bind('blur', cb.close);
+        cb.$button.click(cb.close);
+      };
+      cb.init = function($target) {
+        $target.append(cb.$box);
+        pos = cb.$box.position();
+        cb.$text.hide();
+        cb.load();
+        cb.$button.click(cb.open);
+      };
+      return cb;
+    };
+    var lineByLine = function() {
+      var commentBoxes = [];
+      var basePos = $target.position();
+      var mainText = $('<div>').attr('id', 'main-text').
+        css('position', 'absolute').
+        css('top', basePos.top).
+        css('left', basePos.left + 25).
+        attr('contenteditable', 'true');
+      var setup = function(text) {
+        mainText.text(text);
+        $target.append(mainText);
+        var numLines = mainText.height() / cb.size;
+        var tmpBox = makeCommentBox('comment-0', basePos.top, basePos.left);
+        commentBoxes.push(tmpBox);
+        $target.append(tmpBox);
+        tmpBox.init($(targetSelector));
+        for(var i = 0; i < numLines; i++) {
+          var soFar = cb.size * i;
+          var tmpBox = makeCommentBox('comment-'+i, basePos.top + soFar, basePos.left);
+          commentBoxes.push(tmpBox);
+          $target.append(tmpBox);
+          tmpBox.init($(targetSelector));
+        }
+      };
+      $.ajax({
+        type: 'GET',
+        url: '/api/categories/1/'}).done(setup).fail(function(e) {
+          console.log(e);
+        });
+    };
+    var inBoxes = function() {
+      var widthWithMargin = function($el) {
+        var width = $el.width();
+        var tmp = $el.css('margin-left').replace(/px/, '');
+        width += parseInt(tmp);
+        return width;
+      };
+      var heightWithMargin = function($el) {
+        var height = $el.height();
+        var tmp = $el.css('margin-top').replace(/px/, '');
+        height += parseInt(tmp);
+        return height;
+      };
+      var redraw = function(boxes) {
+        for(var i = 0; i < boxes.length; i++) {
+          var basePos = boxes[i].productBox.position();
+          basePos.top += heightWithMargin(boxes[i].productBox) - boxes[i].commentBox.size;
+          basePos.left += parseInt(boxes[i].productBox.css('margin-left').replace(/px/, ''));
+          boxes[i].commentBox.position( basePos.top, basePos.left);
+        }
+      };
+      var wrappers = [];
+      for(var i = 0; i < 27; i++) {
+        var tmpBox = $('<div>').addClass('product-box');
+        var innerBox = $('<div>').text("A lovely image of a product.");
+        tmpBox.append(innerBox);
+        $target.append(tmpBox);
+        var commentBox = makeCommentBox('product'+i, 0, 0);
+        commentBox.init($(targetSelector));
+        if(commentBox.$box.hasClass('commented')) {
+          tmpBox.addClass('commented');
+          commentBox.$box.removeClass('commented');
+        }
+        tmpBox.append(commentBox.$box);
+        wrappers.push({"commentBox": commentBox, "productBox": tmpBox});
+      }
+      redraw(wrappers);
+      $(window).resize(debounce(function() {
+        redraw(wrappers);
+      }, 5));
+    };
+    inBoxes();
+  };
+
+  commentDemo.destroy = function() {
+
+  };
+
+  return commentDemo;
+}
+
 
 $(function() {
   var currentDemo;
-  var demoFactories = [makeFilesDemo, makeAjaxDemo, makeAnimationDemo];
+  var demoFactories = [makeFilesDemo, makeAjaxDemo, makeAnimationDemo, makeCommentDemo];
   var demoLabels = [];
   var demos = {};
   var baseURL = "/demos/";
@@ -427,7 +604,7 @@ $(function() {
     destroyCurrent();
     newDemo.labelElement.css('text-decoration', 'underline');
     currentDemo = newDemo;
-    currentDemo.go(targetSelector, state);
+    currentDemo.go(targetSelector, state, '#content');
   };
   var updateHistory = function(newDemo) {
     if(!history.pushState) {
