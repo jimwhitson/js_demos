@@ -558,7 +558,7 @@ var makeCommentDemo = function() {
         commentBoxes.push(tmpBox);
         $target.append(tmpBox);
         tmpBox.init($(targetSelector));
-        for(var i = 0; i < numLines; i++) {
+        for(var i = 1; i < numLines; i++) {
           var soFar = cb.size * i;
           var tmpBox = makeCommentBox('comment-'+i, basePos.top + soFar, basePos.left);
           commentBoxes.push(tmpBox);
