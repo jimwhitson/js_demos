@@ -403,7 +403,7 @@ var makeCommentDemo = function() {
   var commentDemo = {};
   commentDemo.id = 'comments';
   commentDemo.labelText = "Comments";
-  commentDemo.description = "Inline commenting with LocalStorage for persistence.";
+  commentDemo.description = "Inline commenting with localStorage for persistence.";
   commentDemo.defaultText = "Edit me.";
 
   commentDemo.go = function(targetSelector, state, containerSelector) {
@@ -451,6 +451,7 @@ var makeCommentDemo = function() {
       cb.saveLS = function() {
         if(cb.$text.text() != commentDemo.defaultText && cb.$text.text() != '') {
           localStorage.setItem(cb.id, cb.$text.text());
+          cb.$box.addClass('commented');
         }
       };
       cb.loadLS = function() {
@@ -494,6 +495,52 @@ var makeCommentDemo = function() {
         cb.$button.click(cb.open);
       };
       return cb;
+    };
+    var makePlusBox = function(id, top, left) {
+      var pb = {};
+      pb.size = 20;
+      pb.id = id;
+      pb.top = top;
+      pb.left = left;
+      pb.$box = $('<div>').addClass('plus-box').
+        attr('id', id).
+        css('position', 'absolute').
+        css('left', pb.left).
+        css('top', pb.top).
+        css('height', pb.size).
+        css('width', pb.size).
+        text('+');
+      pb.position = function(top, left) {
+        pb.top = top;
+        pb.left = left;
+        pb.$box.css('top', top).css('left', left);
+      };
+      pb.saveLS = function() {
+        localStorage.setItem(pb.id, '+');
+      };
+      pb.loadLS = function() {
+        var loaded = localStorage.getItem(pb.id);
+        if(loaded === '+') {
+          pb.$box.addClass('plussed');
+        }
+      };
+      if(localStorage) {
+        pb.save = pb.saveLS;
+        pb.load = pb.loadLS;
+      } else {
+        pb.save = pb.load = function () {};
+      }
+      pb.plus = function() {
+        pb.save();
+        pb.$box.addClass('plussed');
+      };
+      pb.init = function($target) {
+        $target.append(pb.$box);
+        pos = pb.$box.position();
+        pb.load();
+        pb.$box.click(pb.plus);
+      };
+      return pb;
     };
     var lineByLine = function() {
       var commentBoxes = [];
@@ -539,27 +586,30 @@ var makeCommentDemo = function() {
         return height;
       };
       var redraw = function(boxes) {
+        var basePos, margin, width, border;
         for(var i = 0; i < boxes.length; i++) {
-          var basePos = boxes[i].productBox.position();
+          basePos = boxes[i].productBox.position();
           basePos.top += heightWithMargin(boxes[i].productBox) - boxes[i].commentBox.size;
-          basePos.left += parseInt(boxes[i].productBox.css('margin-left').replace(/px/, ''));
-          boxes[i].commentBox.position( basePos.top, basePos.left);
+          margin = parseInt(boxes[i].productBox.css('margin-left').replace(/px/, ''));
+          boxes[i].commentBox.position(basePos.top, basePos.left + margin);
+          width = boxes[i].productBox.width();
+          border = parseInt(boxes[i].productBox.css('border-right-width').replace(/px/, ''));
+          border += parseInt(boxes[i].plusBox.$box.css('border-right-width').replace(/px/, ''));
+          boxes[i].plusBox.position(basePos.top, basePos.left + width - margin/2 - boxes[i].plusBox.size/2 + border);
         }
       };
       var wrappers = [];
-      for(var i = 0; i < 27; i++) {
-        var tmpBox = $('<div>').addClass('product-box');
+      for(var i = 0; i < 10; i++) {
+        var tmpBox = $('<div>').addClass('product-box').attr('id', 'product-'+i);
         var innerBox = $('<div>').text("A lovely image of a product.");
         tmpBox.append(innerBox);
         $target.append(tmpBox);
-        var commentBox = makeCommentBox('product'+i, 0, 0);
+        var commentBox = makeCommentBox('comment-product-'+i, 0, 0);
         commentBox.init($(targetSelector));
-        if(commentBox.$box.hasClass('commented')) {
-          tmpBox.addClass('commented');
-          commentBox.$box.removeClass('commented');
-        }
-        tmpBox.append(commentBox.$box);
-        wrappers.push({"commentBox": commentBox, "productBox": tmpBox});
+        var plusBox = makePlusBox('plus-product-'+i, 0, 0);
+        plusBox.init($(targetSelector));
+        tmpBox.append(commentBox.$box).append(plusBox.$box);
+        wrappers.push({"commentBox": commentBox, "productBox": tmpBox, "plusBox": plusBox});
       }
       redraw(wrappers);
       $(window).resize(debounce(function() {
