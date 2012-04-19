@@ -1,4 +1,43 @@
 (function() {
+var makeHelpBox = function(helpHTML, $target) {
+  var hb = {};
+  var pos = $target.position();
+  var gap;
+
+  hb.$box = $("<div>").
+    addClass('no-select').
+    addClass('help-box').
+    css('position', 'absolute');
+  var helpText = $("<div>").attr('id', 'help-text').
+    addClass('no-select').
+    html(helpHTML);
+  hb.$box.append(helpText);
+  hb.$text = helpText;
+  $target.append(hb.$box);
+  gap = ($target.width() - hb.$box.width())/2;
+  hb.$box.css('top', pos.top - 20).css('left', pos.left + gap);
+  var helpHeight;
+  var openHelp = function() {
+    hb.$box.unbind();
+    hb.$box.animate({height: helpHeight}, 'slow', function() {
+        hb.$text.css('visibility', 'visible');
+        hb.$box.css('height', 'auto');
+        hb.$box.click(closeHelp);
+    });
+    
+  };
+  var closeHelp = function(e) {
+    helpHeight = hb.$box.height();
+    hb.$box.unbind();
+    hb.$box.animate({height: '10px'}, 'slow', function() { 
+        hb.$text.css('visibility', 'hidden');
+        hb.$box.click(openHelp);
+    });
+  };
+
+  hb.$box.click(closeHelp);
+  return hb;
+};
 var makeFilesDemo = function() {
   var filesDemo = {};
   filesDemo.id = 'images';
@@ -122,37 +161,11 @@ var makeFilesDemo = function() {
     var filesDemoTarget = $('<div>').
       attr('id', 'list');
     var tmpText = '<br>Use transparent PNGs for the best effect (<a href="http://freevintagedigistamps.blogspot.co.uk" target="_blank">these</a> are excellent).';
-    var imagesHelp = $("<div>").
-      addClass('no-select').
-      addClass('images-help');
-    var helpText = $("<div>").attr('id', 'help-text').
-      addClass('no-select').
-      html('Drag images into the box .'+
+    var helpText=  'Drag images into the box .'+
           tmpText+'<br>Drag the lower right-hand corner of an image to resize; click for a menu.'+
-          '<br>Click anywhere in this box to dismiss.');
-    imagesHelp.append(helpText);
-    var helpHeight;
-    var openHelp = function() {
-      imagesHelp.unbind();
-      imagesHelp.animate({height: helpHeight}, 'slow', function() {
-          helpText.show();
-          imagesHelp.css('height', 'auto');
-          imagesHelp.click(closeHelp);
-      });
-      
-    };
-    var closeHelp = function(e) {
-      helpHeight = imagesHelp.height();
-      imagesHelp.unbind();
-      imagesHelp.animate({height: '1em'}, 'slow', function() { 
-          helpText.hide(); 
-          imagesHelp.click(openHelp);
-      });
-    };
-
-    imagesHelp.click(closeHelp);
-
-    filesDemoTarget.append(imagesHelp);
+          '<br>Click anywhere in this box to dismiss.';
+    var imagesHelp = makeHelpBox(helpText, filesDemoTarget);
+    filesdemotarget.append(imageshelp.$box);
     $(targetName).append(filesDemoTarget);
     $('#list').bind('dragover', function(e) {
       e.stopPropagation();
@@ -205,6 +218,7 @@ var makeAjaxDemo = function(baseURL) {
       $sections.append($('<span>').
           attr('id', 'section-'+i).
           addClass('section-numbers').
+          addClass('clickable').
           text(i).
           click((function() {
             var number = i;
@@ -227,6 +241,8 @@ var makeAjaxDemo = function(baseURL) {
         ajaxDemo.loadSection(m[1]);
       }
     }
+
+    var helpBox = makeHelpBox("some help text aesuoaeus  ase kaerk ao<br> asebusa kaoerkb -aaoekb ,<br>", $target);
   };
   ajaxDemo.destroy = function(targetName) {
   };
@@ -515,8 +531,12 @@ var makeCommentDemo = function() {
         pb.left = left;
         pb.$box.css('top', top).css('left', left);
       };
-      pb.saveLS = function() {
-        localStorage.setItem(pb.id, '+');
+      pb.saveLS = function(unplus) {
+        if(unplus == "unplus") {
+          localStorage.setItem(pb.id, '-');
+        } else {
+          localStorage.setItem(pb.id, '+');
+        }
       };
       pb.loadLS = function() {
         var loaded = localStorage.getItem(pb.id);
@@ -533,12 +553,22 @@ var makeCommentDemo = function() {
       pb.plus = function() {
         pb.save();
         pb.$box.addClass('plussed');
+        pb.$box.click(unplus);
+      };
+      pb.unplus = function() {
+        pb.save('unplus');
+        pb.$box.removeClass('plussed');
+        pb.$box.click(plus);
       };
       pb.init = function($target) {
         $target.append(pb.$box);
         pos = pb.$box.position();
         pb.load();
-        pb.$box.click(pb.plus);
+        if(pb.$box.hasClass('plussed')) {
+          pb.$box.click(pb.unplus);
+        } else {
+          pb.$box.click(pb.plus);
+        }
       };
       return pb;
     };
@@ -668,6 +698,7 @@ $(function() {
     var tmpLabel = $('<li>').
         attr('id', tmpDemo.id).
         addClass('demo-label').
+        addClass('clickable').
         text(tmpDemo.labelText);
     var tmpDesc = $('<div>').attr('id', tmpDemo.id+'-alt').
       append($('<p>').html(tmpDemo.labelText+": "+tmpDemo.description)).
