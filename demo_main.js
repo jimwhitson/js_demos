@@ -15,7 +15,8 @@ var makeHelpBox = function(helpHTML, $target) {
   hb.$text = helpText;
   $target.append(hb.$box);
   gap = ($target.width() - hb.$box.width())/2;
-  hb.$box.css('top', pos.top - 20).css('left', pos.left + gap);
+  var margin = parseInt($target.css('margin-top').replace(/px/, ''));
+  hb.$box.css('top', pos.top).css('left', pos.left + gap);
   var helpHeight;
   var openHelp = function() {
     hb.$box.unbind();
@@ -29,7 +30,7 @@ var makeHelpBox = function(helpHTML, $target) {
   var closeHelp = function(e) {
     helpHeight = hb.$box.height();
     hb.$box.unbind();
-    hb.$box.animate({height: '10px'}, 'slow', function() { 
+    hb.$box.animate({height: '0'}, 'slow', function() { 
         hb.$text.css('visibility', 'hidden');
         hb.$box.click(openHelp);
     });
@@ -160,12 +161,11 @@ var makeFilesDemo = function() {
   filesDemo.go = function(targetName, state) {
     var filesDemoTarget = $('<div>').
       attr('id', 'list');
-    var tmpText = '<br>Use transparent PNGs for the best effect (<a href="http://freevintagedigistamps.blogspot.co.uk" target="_blank">these</a> are excellent).';
-    var helpText=  'Drag images into the box .'+
-          tmpText+'<br>Drag the lower right-hand corner of an image to resize; click for a menu.'+
-          '<br>Click anywhere in this box to dismiss.';
-    var imagesHelp = makeHelpBox(helpText, filesDemoTarget);
-    filesdemotarget.append(imageshelp.$box);
+    var tmpText = 'Use transparent PNGs for the best effect (<a href="http://freevintagedigistamps.blogspot.co.uk" target="_blank">these</a> are excellent).';
+    var helpText=  'Drag images into the box from your computer, then drag and drop within the box to arrange them. '+
+          tmpText+' Drag the lower right-hand corner of an image to resize or click an image for a menu.'+
+          '<br><br>Click anywhere in this box to dismiss it.';
+    var imagesHelp = makeHelpBox(helpText, $(targetName));
     $(targetName).append(filesDemoTarget);
     $('#list').bind('dragover', function(e) {
       e.stopPropagation();
@@ -242,7 +242,7 @@ var makeAjaxDemo = function(baseURL) {
       }
     }
 
-    var helpBox = makeHelpBox("some help text aesuoaeus  ase kaerk ao<br> asebusa kaoerkb -aaoekb ,<br>", $target);
+    var helpBox = makeHelpBox("Each section is fetched from the server on demand and cached in the browser so the user doesn't experience a jarring page load and the server load is kept to a minimum.", $target);
   };
   ajaxDemo.destroy = function(targetName) {
   };
@@ -361,8 +361,9 @@ var makeAnimationDemo = function() {
       var tileLabelWrapper = $('<div>').attr('id', 'tile-label-wrapper').hide();
       tileLabelWrapper.append($('<span>').attr('id', 'tile-label').
           addClass('context-menu-option').
+          addClass('clickable').
           text("Animate").css('position', 'relative'));
-      $container.before(tileLabelWrapper);
+      $container.prepend(tileLabelWrapper);
       $('#tile-label-wrapper').slideDown('slow').click(startDisco).addClass('no-select');
     }
 
@@ -664,7 +665,7 @@ $(function() {
   var demos = {};
   var baseURL = "/demos/";
   var title = "<h3>A selection of JavaScript demos.</h3><hr>";
-  var targetSelector = '#demo-target';
+  var targetSelector = '#content';
   var controlsParent = '#demo-controls';
   var $defaultText = $('<div>').html(title);
   var destroyCurrent = function() {

@@ -18,6 +18,13 @@ div.img-wrapper {
 .help-box {
   background: #EDF4FF;
   border-radius: 0.4em;
+  max-width: 40%;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  text-align: left;
+  opacity: 0.98;
   box-shadow: 1px 1px 1px 1px #EEE;
   behavior: url(/PIE.htc);
 }
@@ -136,6 +143,7 @@ span.section-numbers {
 }
 
 #tile-label-wrapper {
+  text-align: center;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
 }
