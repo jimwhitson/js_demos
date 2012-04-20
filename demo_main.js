@@ -1,14 +1,16 @@
 (function() {
-var makeHelpBox = function(helpHTML, $target) {
+var makeHelpBox = function(id, helpHTML, $target) {
   var hb = {};
+  hb.id = id;
   var pos = $target.position();
   var gap;
 
   hb.$box = $("<div>").
     addClass('no-select').
     addClass('help-box').
+    addClass('clickable').
     css('position', 'absolute');
-  var helpText = $("<div>").attr('id', 'help-text').
+  var helpText = $("<div>").attr('id', hb.id).
     addClass('no-select').
     html(helpHTML);
   hb.$box.append(helpText);
@@ -19,8 +21,10 @@ var makeHelpBox = function(helpHTML, $target) {
   hb.$box.css('top', pos.top).css('left', pos.left + gap);
   var helpHeight;
   var openHelp = function() {
+    console.log('open');
     hb.$box.unbind();
     hb.$box.animate({height: helpHeight}, 'slow', function() {
+        console.log('done');
         hb.$text.css('visibility', 'visible');
         hb.$box.css('height', 'auto');
         hb.$box.click(closeHelp);
@@ -34,9 +38,21 @@ var makeHelpBox = function(helpHTML, $target) {
         hb.$text.css('visibility', 'hidden');
         hb.$box.click(openHelp);
     });
+    if(window.localStorage) {
+      window.localStorage.setItem(hb.id, "closed");
+    }
   };
-
-  hb.$box.click(closeHelp);
+  if(window.localStorage) {
+    var closed = window.localStorage.getItem(hb.id);
+    if(closed === "closed") {
+      closeHelp();
+      hb.$box.click(openHelp);
+    } else { 
+      hb.$box.click(closeHelp);
+    }
+  } else {
+    hb.$box.click(closeHelp);
+  }
   return hb;
 };
 var makeFilesDemo = function() {
@@ -165,7 +181,7 @@ var makeFilesDemo = function() {
     var helpText=  'Drag images into the box from your computer, then drag and drop within the box to arrange them. '+
           tmpText+' Drag the lower right-hand corner of an image to resize or click an image for a menu.'+
           '<br><br>Click anywhere in this box to dismiss it.';
-    var imagesHelp = makeHelpBox(helpText, $(targetName));
+    var help = makeHelpBox('files-demo-help', helpText, $(targetName));
     $(targetName).append(filesDemoTarget);
     $('#list').bind('dragover', function(e) {
       e.stopPropagation();
@@ -242,7 +258,9 @@ var makeAjaxDemo = function(baseURL) {
       }
     }
 
-    var helpBox = makeHelpBox("Each section is fetched from the server on demand and cached in the browser so the user doesn't experience a jarring page load and the server load is kept to a minimum.", $target);
+    var help = makeHelpBox('files-demo-text', "Each section is fetched from the server on demand and"+
+        " cached in the browser so the user doesn't experience a jarring page load and"+
+        " the server load is kept to a minimum. <br><br>Click anywhere in this box to dismiss it.", $(targetName));
   };
   ajaxDemo.destroy = function(targetName) {
   };
@@ -275,6 +293,8 @@ var makeAnimationDemo = function() {
   animationDemo.go = function(targetName, state) {
     var $target = $(targetName);
     var maxOffset = $target.width() - animationDemo.boxWidth;
+    var helpText = "Drag and drop the coloured tiles to swap them. Press the button to animate the colours; press again to stop. <br><br>Click anywhere in this box to dismiss it.";
+    var help = makeHelpBox('animation-demo-help', helpText, $target);
     var colouredDivs = [];
     for(var i = 0; i < animationDemo.colours.length; i++) {
       var $tmpDiv = $('<div>').
@@ -362,9 +382,10 @@ var makeAnimationDemo = function() {
       tileLabelWrapper.append($('<span>').attr('id', 'tile-label').
           addClass('context-menu-option').
           addClass('clickable').
+          click(startDisco).
           text("Animate").css('position', 'relative'));
       $container.prepend(tileLabelWrapper);
-      $('#tile-label-wrapper').slideDown('slow').click(startDisco).addClass('no-select');
+      $('#tile-label-wrapper').slideDown('slow').addClass('no-select');
     }
 
     var disco = function(colours) {
@@ -422,7 +443,6 @@ var makeCommentDemo = function() {
   commentDemo.labelText = "Comments";
   commentDemo.description = "Inline commenting with localStorage for persistence.";
   commentDemo.defaultText = "Edit me.";
-
   commentDemo.go = function(targetSelector, state, containerSelector) {
     var $container = $(containerSelector);
     var $target = $(targetSelector);
@@ -439,6 +459,8 @@ var makeCommentDemo = function() {
           }, timeout);
       }
     }
+    var helpText = "Do stuff.";
+    var help = makeHelpBox('comment-demo-help', helpText, $target);
 
     var makeCommentBox = function(id, top, left) {
       var cb = {};
@@ -446,7 +468,10 @@ var makeCommentDemo = function() {
       cb.id = id;
       cb.top = top;
       cb.left = left;
-      cb.$button = $('<div>').addClass('comment-button').html("&nbsp;");
+      cb.$button = $('<div>').
+        addClass('comment-button').
+        addClass('clickable').
+        html("&nbsp;");
       cb.$text = $('<span>').
         addClass('comment-text').
         attr('contenteditable', 'true').
@@ -467,18 +492,18 @@ var makeCommentDemo = function() {
       };
       cb.saveLS = function() {
         if(cb.$text.text() != commentDemo.defaultText && cb.$text.text() != '') {
-          localStorage.setItem(cb.id, cb.$text.text());
+          window.localStorage.setItem(cb.id, cb.$text.text());
           cb.$box.addClass('commented');
         }
       };
       cb.loadLS = function() {
-        var loaded = localStorage.getItem(cb.id);
+        var loaded = window.localStorage.getItem(cb.id);
         if(loaded && loaded != '' && loaded != commentDemo.defaultText) {
           cb.$text.text(loaded);
           cb.$box.addClass('commented');
         }
       };
-      if(localStorage) {
+      if(window.localStorage) {
         cb.save = cb.saveLS;
         cb.load = cb.loadLS;
       } else {
@@ -520,6 +545,7 @@ var makeCommentDemo = function() {
       pb.top = top;
       pb.left = left;
       pb.$box = $('<div>').addClass('plus-box').
+        addClass('clickable').
         attr('id', id).
         css('position', 'absolute').
         css('left', pb.left).
@@ -534,32 +560,32 @@ var makeCommentDemo = function() {
       };
       pb.saveLS = function(unplus) {
         if(unplus == "unplus") {
-          localStorage.setItem(pb.id, '-');
+          window.localStorage.setItem(pb.id, '-');
         } else {
-          localStorage.setItem(pb.id, '+');
+          window.localStorage.setItem(pb.id, '+');
         }
       };
       pb.loadLS = function() {
-        var loaded = localStorage.getItem(pb.id);
+        var loaded = window.localStorage.getItem(pb.id);
         if(loaded === '+') {
           pb.$box.addClass('plussed');
         }
       };
-      if(localStorage) {
+      if(window.localStorage) {
         pb.save = pb.saveLS;
         pb.load = pb.loadLS;
       } else {
         pb.save = pb.load = function () {};
       }
       pb.plus = function() {
-        pb.save();
+        pb.save('plus');
         pb.$box.addClass('plussed');
-        pb.$box.click(unplus);
+        pb.$box.click(pb.unplus);
       };
       pb.unplus = function() {
         pb.save('unplus');
         pb.$box.removeClass('plussed');
-        pb.$box.click(plus);
+        pb.$box.click(pb.plus);
       };
       pb.init = function($target) {
         $target.append(pb.$box);
@@ -630,9 +656,13 @@ var makeCommentDemo = function() {
         }
       };
       var wrappers = [];
-      for(var i = 0; i < 10; i++) {
-        var tmpBox = $('<div>').addClass('product-box').attr('id', 'product-'+i);
-        var innerBox = $('<div>').text("A lovely image of a product.");
+      var products = [{image: '/bike.jpeg', name: 'Bike', id: 'bike'}, {image: '/chair.jpeg', name: "Chair", id: 'chair'}, {image: '/plane.jpeg', name: 'Flying boat', id: 'plane'}];
+      for(var i = 0; i < products.length; i++) {
+        var tmpBox = $('<div>').addClass('product-box').attr('id', products[i].id);
+        var innerBox = $('<div>').html('<img height="200" src="'+products[i].image+'">');
+        var text = $('<div>').
+          addClass('product-name').
+          text(products[i].name);
         tmpBox.append(innerBox);
         $target.append(tmpBox);
         var commentBox = makeCommentBox('comment-product-'+i, 0, 0);

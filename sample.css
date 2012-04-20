@@ -24,6 +24,7 @@ div.img-wrapper {
   padding-top: 0.2em;
   padding-bottom: 0.2em;
   text-align: left;
+  z-index: 3;
   opacity: 0.98;
   box-shadow: 1px 1px 1px 1px #EEE;
   behavior: url(/PIE.htc);
@@ -47,8 +48,8 @@ div.img-wrapper {
 
 .comment-box, .plus-box {
   background-color: #FFFFFF;
-  box-shadow: 1px 1px 1px 1px #DDD;
-  behavior: url(/PIE.htc);
+  /*box-shadow: 1px 1px 1px 1px #000;
+  behavior: url(/PIE.htc);*/
   padding: 0;
 }
 
@@ -101,8 +102,6 @@ div.img-wrapper {
 }
 
 .product-box {
-  height: 200px;
-  width: 140px;
   border-style: solid;
   border-width: 1px;
   border-color: #000000;
