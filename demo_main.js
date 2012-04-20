@@ -21,10 +21,8 @@ var makeHelpBox = function(id, helpHTML, $target) {
   hb.$box.css('top', pos.top).css('left', pos.left + gap);
   var helpHeight;
   var openHelp = function() {
-    console.log('open');
     hb.$box.unbind();
     hb.$box.animate({height: helpHeight}, 'slow', function() {
-        console.log('done');
         hb.$text.css('visibility', 'visible');
         hb.$box.css('height', 'auto');
         hb.$box.click(closeHelp);
@@ -258,9 +256,10 @@ var makeAjaxDemo = function(baseURL) {
       }
     }
 
-    var help = makeHelpBox('files-demo-text', "Each section is fetched from the server on demand and"+
-        " cached in the browser so the user doesn't experience a jarring page load and"+
-        " the server load is kept to a minimum. <br><br>Click anywhere in this box to dismiss it.", $(targetName));
+    var help = makeHelpBox('files-demo-text', "Each section is fetched from the server on demand "+
+        " so the user doesn't experience a jarring page load while browsing. The text is cached in the browser"+
+        " as the sections are fetched, so"+
+        " unnecessary data transfer is avoided. <br><br>Click anywhere in this box to dismiss it.", $(targetName));
   };
   ajaxDemo.destroy = function(targetName) {
   };
@@ -459,7 +458,7 @@ var makeCommentDemo = function() {
           }, timeout);
       }
     }
-    var helpText = "Do stuff.";
+    var helpText = "Click on the boxes with circles in them to attach a comment to a picture, or the boxes with plusses in them to mark particular pictures. This information is stored in your browser and filled in when you revisit the page. <br><br>Click anywhere in this box to dismiss it.";
     var help = makeHelpBox('comment-demo-help', helpText, $target);
 
     var makeCommentBox = function(id, top, left) {
