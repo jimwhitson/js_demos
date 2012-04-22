@@ -790,7 +790,7 @@ $(function() {
       e.preventDefault();
       destroyCurrent();
       $(targetSelector).append($defaultText);
-      $('.alt-section-link').click(demoClickHandler);
+      $('.alt-section-link').click(demoClickHandler).addClass('clickable');
       if(history.pushState) {
         history.pushState({section: 'default'}, "", baseURL);
       }
