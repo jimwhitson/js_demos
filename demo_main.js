@@ -177,7 +177,7 @@ var makeFilesDemo = function() {
       attr('id', 'list');
     var tmpText = 'Use transparent PNGs for the best effect (<a href="http://freevintagedigistamps.blogspot.co.uk" target="_blank">these</a> are excellent).';
     var helpText=  'Drag images into the box from your computer, then drag and drop within the box to arrange them. '+
-          tmpText+' Drag the lower right-hand corner of an image to resize or click an image for a menu.'+
+          tmpText+' Drag the lower right-hand corner of an image to resize or click an image for a menu.<br>(<a href="https://www.google.com/chrome">Chrome</a> and <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a> only)'+
           '<br><br>Click anywhere in this box to dismiss it.';
     var help = makeHelpBox('files-demo-help', helpText, $(targetName));
     $(targetName).append(filesDemoTarget);
@@ -440,7 +440,7 @@ var makeCommentDemo = function() {
   var commentDemo = {};
   commentDemo.id = 'comments';
   commentDemo.labelText = "Comments";
-  commentDemo.description = "Inline commenting with localStorage for persistence.";
+  commentDemo.description = 'Inline commenting with browser storage for persistence (IE 8 and above, <a href="https://www.google.com/chrome">Chrome</a> and <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>.';
   commentDemo.defaultText = "Edit me.";
   commentDemo.go = function(targetSelector, state, containerSelector) {
     var $container = $(containerSelector);
@@ -458,7 +458,7 @@ var makeCommentDemo = function() {
           }, timeout);
       }
     }
-    var helpText = "Click on the boxes with circles in them to attach a comment to a picture, or the boxes with plusses in them to mark particular pictures. This information is stored in your browser and filled in when you revisit the page. <br><br>Click anywhere in this box to dismiss it.";
+    var helpText = 'Click on the boxes with circles in them to attach a comment to a picture, or the boxes with plusses in them to mark particular pictures. This information is stored in your browser and filled in when you revisit the page (IE 8 and above, <a href="https://www.google.com/chrome">Chrome</a> and <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>). Nothing is sent to the server or in other way recorded or processed.<br><br>Click anywhere in this box to dismiss it.';
     var help = makeHelpBox('comment-demo-help', helpText, $target);
 
     var makeCommentBox = function(id, top, left) {
